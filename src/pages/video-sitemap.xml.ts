@@ -1,3 +1,4 @@
+// src/pages/video-sitemap.xml.ts
 import type { APIRoute } from 'astro';
 import { slugify } from '../utils/slugify';
 import { getAllVideos, type VideoData } from '../utils/data';
@@ -35,13 +36,14 @@ export const GET: APIRoute = async ({ site }) => {
     const absoluteThumbnailUrl = thumbnailUrl && (thumbnailUrl.startsWith('http://') || thumbnailUrl.startsWith('https://')) ? thumbnailUrl : `${baseUrl}${thumbnailUrl}`;
     const absoluteEmbedUrl = embedUrl && (embedUrl.startsWith('http://') || embedUrl.startsWith('https://')) ? embedUrl : `${baseUrl}${embedUrl}`;
 
-    const duration = video.duration || 26;
+    const durationInSeconds = parseDurationStringToSeconds(video.duration);
     const videoPublishedDate = video.datePublished || defaultPublishedDate;
     const videoModifiedDate = video.dateModified || videoPublishedDate;
 
-    const videoDescriptionForSitemap = `Video bokep viral ${video.title} yang terbaru kategori ${video.category} nonton streaming di link ${nama}`;
+    const videoTitleForSitemap = video.title || 'Video';
+    const videoDescriptionForSitemap = `Video bokep viral ${videoTitleForSitemap} yang terbaru kategori ${video.category || 'Unknown'} nonton streaming di link ${nama}`;
 
-    if (video.title && videoDescriptionForSitemap && absoluteThumbnailUrl && absoluteEmbedUrl) {
+    if (videoTitleForSitemap && videoDescriptionForSitemap && absoluteThumbnailUrl && absoluteEmbedUrl) {
       let tagsHtml = '';
       if (video.tags) {
         let tagsToProcess: string[] = [];
@@ -65,10 +67,10 @@ export const GET: APIRoute = async ({ site }) => {
           <priority>0.8</priority>
           <video:video>
             <video:thumbnail_loc>${absoluteThumbnailUrl}</video:thumbnail_loc>
-            <video:title>${escapeXml(video.title)}</video:title>
+            <video:title>${escapeXml(videoTitleForSitemap)}</video:title>
             <video:description>${escapeXml(videoDescriptionForSitemap)}</video:description>
             <video:content_loc>${absoluteEmbedUrl}</video:content_loc>
-            <video:duration>${duration}</video:duration>
+            <video:duration>${durationInSeconds}</video:duration>
             <video:publication_date>${videoPublishedDate}</video:publication_date>
             ${tagsHtml}
             ${video.category ? `<video:category>${escapeXml(video.category)}</video:category>` : ''}
@@ -92,6 +94,44 @@ export const GET: APIRoute = async ({ site }) => {
     },
   });
 };
+
+/**
+ * Mengurai string durasi (misal: "120", "1:30", "01:30") menjadi jumlah detik.
+ * Mengembalikan 26 jika tidak dapat diurai.
+ * @param durationString String durasi dari data video.
+ * @returns Durasi dalam detik (number).
+ */
+function parseDurationStringToSeconds(durationString: string | undefined): number {
+    if (!durationString) {
+        return 26;
+    }
+
+    const num = parseInt(durationString, 10);
+    if (!isNaN(num)) {
+        return num;
+    }
+
+    const parts = durationString.split(':');
+    if (parts.length === 2) {
+        const minutes = parseInt(parts[0], 10);
+        const seconds = parseInt(parts[1], 10);
+        if (!isNaN(minutes) && !isNaN(seconds)) {
+            return (minutes * 60) + seconds;
+        }
+    }
+
+    if (parts.length === 3) {
+        const hours = parseInt(parts[0], 10);
+        const minutes = parseInt(parts[1], 10);
+        const seconds = parseInt(parts[2], 10);
+        if (!isNaN(hours) && !isNaN(minutes) && !isNaN(seconds)) {
+            return (hours * 3600) + (minutes * 60) + seconds;
+        }
+    }
+
+    return 26;
+}
+
 
 function escapeXml(unsafe: string | null | undefined): string {
   if (!unsafe) return '';
