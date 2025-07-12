@@ -35,7 +35,7 @@ export const GET: APIRoute = async ({ site }) => {
     const absoluteThumbnailUrl = thumbnailUrl && (thumbnailUrl.startsWith('http://') || thumbnailUrl.startsWith('https://')) ? thumbnailUrl : `${baseUrl}${thumbnailUrl}`;
     const absoluteEmbedUrl = embedUrl && (embedUrl.startsWith('http://') || embedUrl.startsWith('https://')) ? embedUrl : `${baseUrl}${embedUrl}`;
 
-    const duration = video.duration && typeof video.duration === 'number' ? Math.round(video.duration) : 26;
+    const duration = video.duration || 26;
     const videoPublishedDate = video.datePublished || defaultPublishedDate;
     const videoModifiedDate = video.dateModified || videoPublishedDate;
 
