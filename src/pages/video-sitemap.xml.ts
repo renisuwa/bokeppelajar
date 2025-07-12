@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { slugify } from '../utils/slugify';
 import { getAllVideos, type VideoData } from '../utils/data';
-import { terbit } from '../utils/site';
+import { nama, terbit } from '../utils/site';
 
 export const GET: APIRoute = async ({ site }) => {
   if (!site) {
@@ -39,7 +39,7 @@ export const GET: APIRoute = async ({ site }) => {
     const videoPublishedDate = video.datePublished || defaultPublishedDate;
     const videoModifiedDate = video.dateModified || videoPublishedDate;
 
-    const videoDescriptionForSitemap = `Video bokep viral ${video.title} yang terbaru kategori ${video.category} nonton streaming di link ${terbit}`;
+    const videoDescriptionForSitemap = `Video bokep viral ${video.title} yang terbaru kategori ${video.category} nonton streaming di link ${nama}`;
 
     if (video.title && videoDescriptionForSitemap && absoluteThumbnailUrl && absoluteEmbedUrl) {
       let tagsHtml = '';
