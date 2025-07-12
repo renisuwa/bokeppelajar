@@ -59,7 +59,7 @@ export const GET: APIRoute = async ({ site }) => {
           <lastmod>${videoLastMod}</lastmod>
           <image:image>
             <image:loc>${absoluteThumbnailUrl}</image:loc>
-            <image:caption>${escapeXml(imageCaptionDescription)}</image:caption> {/* <--- PERUBAHAN DI SINI */}
+            <image:caption>${escapeXml(imageCaptionDescription)}</image:caption>
             <image:title>${escapeXml(video.title)}</image:title>
           </image:image>
         </url>
